@@ -4,6 +4,8 @@ You can change the code to work for more regions.
 
 To run install python3 and pip install the required libraries.
 
+The code have UI AND CLI, the cli is better.
+
 The code shows normal cards count,name and prices, the total value of normal cards for an steam game from the APPID and if there are profitable the price of the game minus the half of the cards sum(for card farming).
 
 preaty bad aproch and code but it's working.
