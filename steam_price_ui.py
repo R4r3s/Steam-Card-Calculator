@@ -7,7 +7,7 @@ from colorama import init, Fore, Style
 init(autoreset=True)
 
 # Initialize variables
-region_price_ratio = 256
+region_price_ratio = 350
 region_code = "ar"
 
 # Create the main application window
