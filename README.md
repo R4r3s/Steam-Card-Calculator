@@ -1,5 +1,9 @@
 # Steam Card Calculator
 
+![Version](https://img.shields.io/badge/version-1.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Issues](https://img.shields.io/github/issues/R4r3s/Steam-Marketplace-Linker-For-Badge-Page)
+![Stars](https://img.shields.io/github/stars/R4r3s/Steam-Marketplace-Linker-For-Badge-Page)
 ![image](https://github.com/R4r3s/steam_card_calculator/assets/86518933/08fa7fcf-63a6-45ec-a91b-8ecade917ac3)
 
 ## Overview
