@@ -10,7 +10,7 @@ init(autoreset=True)
 #Initialize variable , region_ratio is set to Argentina, I could've used an api but I am lazy
 #You can change the ratio and region_code to your desired country, the region_code represents the price of the game in that region of steam.
 
-region_price_ratio = 256
+region_price_ratio = 350
 region_code = "ar"
 
 # Prompt the user to enter the game ID and region code
