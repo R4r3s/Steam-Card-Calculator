@@ -1,5 +1,8 @@
 import requests
 import json
+import math
+import re
+import statistics
 import tkinter as tk
 from colorama import init, Fore, Style
 
@@ -59,33 +62,46 @@ def get_game_details():
         price_int = filter_numbers(price)
 
         cards = data_trade["total_count"]
+        obtainable_cards = math.ceil(cards / 2)
         sum_card = sum(int(result["sell_price"]) for result in data_trade["results"])
         sum_card /= 100
+
 
         # Insert the game details into the text area
         game_details_text.insert(tk.END, f"Name: {name}\n")
         game_details_text.insert(tk.END, f"Price: {price}\n")
         game_details_text.insert(tk.END, f"Cards Count: {cards}\n")
+        game_details_text.insert(tk.END, f"You can obtain {obtainable_cards} cards.\n")
+        game_details_text.insert(tk.END, "- - - - - - - - - - - - - - - - - - - - - - - - \n")
 
         results = data_trade['results']
+        market_hash_names = [result['asset_description']['market_hash_name'] for result in results]
         market_names = [result['asset_description']['market_name'] for result in results]
-        sell_prices = [result['sell_price_text'] for result in results]
+        sell_prices = []
 
-        for market_name, sell_price in zip(market_names, sell_prices):
-            game_details_text.insert(tk.END, f"Name: {market_name}\nSell Price: {sell_price}\n")
+        for market_name, market_hash_name in zip(market_names, market_hash_names):
+            url = f"https://steamcommunity.com/market/priceoverview/?appid=753&currency=34&market_hash_name={market_hash_name}"
+            response = session.get(url)
+            regional_price_data = json.loads(response.text)
+            lowest_price = regional_price_data["lowest_price"]
+            sell_prices.append(convert_price(lowest_price))
+            game_details_text.insert(tk.END, f"Name: {market_name}\nSell Price: {lowest_price}\n")
 
-        game_details_text.insert(tk.END, f"Cards Total Price: {sum_card}$ ~ ARS$ {sum_card * region_price_ratio}\n")
+        min_sell_price = min(sell_prices)
+        
+        game_details_text.insert(tk.END, "- - - - - - - - - - - - - - - - - - - - - - - - \n")
 
-        profit = round(((sum_card * region_price_ratio) / 2) - price_int / 100, 2)
-        if profit > 10:
-            game_details_text.insert(tk.END, f"Profitability: ARS$ {profit}\n")
-        elif profit > 0:
-            game_details_text.insert(tk.END, f"Profitability: ARS$ {profit}\n")
-        else:
-            game_details_text.insert(tk.END, f"Profitability: ARS$ {profit}\n")
-        game_details_text.insert(tk.END, "------------------------------------------------\n")
-    else:
-        game_details_text.insert(tk.END, "Request was not successful.\n")
+        game_details_text.insert(tk.END, f"Profitability: \n")
+        game_details_text.insert(tk.END, f"      * Bad Luck boy: ARS$ {obtainable_cards * min_sell_price} \n")
+        game_details_text.insert(tk.END, f"      * Avg: ARS$ {obtainable_cards *(statistics.median(sell_prices))} \n")
+
+        game_details_text.insert(tk.END, f" \n")
+        
+        game_details_text.insert(tk.END, f"      * Final balance: \n")
+        game_details_text.insert(tk.END, f"      * Bad Luck boy: ARS$ { (obtainable_cards * min_sell_price) - convert_price(price) } \n")
+        game_details_text.insert(tk.END, f"      * Avg: ARS$ { (obtainable_cards *(statistics.median(sell_prices))) - convert_price(price) } \n")
+
+
 
         
 # Create the "Get Details" button
@@ -99,6 +115,15 @@ def filter_numbers(string):
         if char.isdigit():
             numbers += char
     return float(numbers)
+
+def convert_price(price_str):
+    # Utilizamos una expresión regular para extraer solo los números y el punto.
+    clean_price = re.sub(r'[^\d.]', '', price_str.replace(",", "."))
+    
+    # Convertimos la cadena en un número en punto flotante.
+    price_float = float(clean_price)
+    
+    return price_float
 
 # Start the Tkinter event loop
 window.mainloop()
